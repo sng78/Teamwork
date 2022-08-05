@@ -2,15 +2,21 @@ import java.util.Scanner;
 import java.lang.NumberFormatException;
 
 class Main {
-    public static void main(String[] args) {//
-
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int[] marcetProduct = new int[5];
         String[] products = {"Хлеб", "Яблоки", "Молоко", "Яйца", "Колбаса"};
-        int[] prices = {100, 200, 300, 150, 400};
+        String[] productsAction = {"Мороженое", "Печенье", "Кофе"};//товары по акции
+        int[] prices = {100, 200, 300, 150, 400};//ценник на товары без акции
+        int[] pricesAction = {100, 350, 500};// ценник на товары по акции
+        int[] marcetProduct = new int[prices.length + pricesAction.length];
+
         System.out.println("Список возможных товаров для покупки");
         for (int i = 0; i < products.length; i++) {
             System.out.println((i + 1) + ". " + products[i] + " " + prices[i] + " руб/шт");
+        }
+        System.out.println("Список товаров по акции 3=2");
+        for (int j = 0; j < productsAction.length; j++) {
+            System.out.println((j + products.length + 1) + ". " + productsAction[j] + " " + pricesAction[j] + " руб/шт");
         }
         int sumProducts = 0;
         while (true) {
@@ -26,15 +32,12 @@ class Main {
                 if (inputProduct.length == 2) {//проверка условия ввода двух чисел через пробел
                     productNumber = Integer.parseInt(inputProduct[0]) - 1;
                     productCount = Integer.parseInt(inputProduct[1]);
-                } else if (!(inputProduct.length == 2)) {
+                } else if ((inputProduct.length != 2)) {
                     System.out.println("Введите два числа через пробел!");
                 }
-                if (productNumber + 1 > products.length || ((productNumber + 1) < 0) || ((productCount) < 0)) { //проверка условия корректности ввода двух чисел больше 0 и не больше длины массива
-                    System.out.println("Выберите продукт от 1 до " + products.length);
+                if (productNumber + 1 > marcetProduct.length || ((productNumber + 1) < 0) || ((productCount) < 0)) { //проверка условия корректности ввода двух чисел больше 0 и не больше длины массива
+                    System.out.println("Выберите продукт от 1 до " + marcetProduct.length);
                 } else {
-                    int currentPrice = prices[productNumber];
-                    String currentProduct = products[productNumber];
-                    sumProducts += currentPrice * productCount;
                     marcetProduct[productNumber] += productCount; // создаю массив корзины и добавляю в ячеку количество товара
                 }
             } catch (NumberFormatException e) {
@@ -43,12 +46,39 @@ class Main {
             }
         }
         System.out.println("Ваша корзина:");
-        for (int i = 0; i < products.length; i++) {
+        int sumProduct = 0;
+        int sumProductAction = 0;
+        int sumProductActionAll = 0;
+        System.out.println("Товары без акции");
+        for (int i = 0; i < marcetProduct.length; i++) {
             if (marcetProduct[i] > 0) {
-                int sumProduct = marcetProduct[i] * prices[i];
-                System.out.println(products[i] + " " + marcetProduct[i] + " шт " + prices[i] + " руб/шт " + sumProduct + " руб в сумме");
+                if (marcetProduct[i] / 3 == 0 && i > prices.length - 1) {//если акционных товаров менее 3 то скидка не действует!!!
+                    sumProduct = marcetProduct[i] * pricesAction[i - products.length];
+                    System.out.println(productsAction[i - products.length] + " " + marcetProduct[i] + " шт " + pricesAction[i - products.length] + " руб/шт " + sumProduct + " руб в сумме");
+                    sumProducts += sumProduct;
+                } else if (i < 5) {
+                    sumProduct = marcetProduct[i] * prices[i];
+                    System.out.println(products[i] + " " + marcetProduct[i] + " шт " + prices[i] + " руб/шт " + sumProduct + " руб в сумме");
+                    sumProducts += sumProduct;
+                }
             }
         }
-        System.out.println("Итого: " + sumProducts + " руб");
+        System.out.println("Итого: " + sumProducts + " руб"); // без акции
+
+        System.out.println("Товары по акции 3 по цене 2: ");
+        for (int i = 0; i < marcetProduct.length; i++) {
+            if (marcetProduct[i] != 0) {
+                if (marcetProduct[i] / 3 > 0 && i > prices.length - 1) {//проверяю корзину на акционные товары
+                    int numberProductsAction = i - products.length;
+                    int countProductsAction = (marcetProduct[i] * 2 / 3 + marcetProduct[i] % 3);
+                    sumProductAction = countProductsAction * pricesAction[numberProductsAction];
+                    System.out.println(productsAction[numberProductsAction] + " " + countProductsAction + " шт вместо " + marcetProduct[i] + " шт " + pricesAction[numberProductsAction] + " руб/шт " + " в сумме " + sumProductAction + " руб. ");
+
+                    sumProductActionAll += sumProductAction;
+                }
+            }
+        }
+        System.out.println("Итого по акции: " + sumProductActionAll + " руб");
+        System.out.println("Итого по всем: " + (sumProducts + sumProductAction) + " руб");
     }
 }
