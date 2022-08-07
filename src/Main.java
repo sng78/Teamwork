@@ -32,21 +32,29 @@ class Main {
                 if (inputProduct.length == 2) {//проверка условия ввода двух чисел через пробел
                     productNumber = Integer.parseInt(inputProduct[0]) - 1;
                     productCount = Integer.parseInt(inputProduct[1]);
-                } else if ((inputProduct.length != 2)) {
+                } else {
                     System.out.println("Введите два числа через пробел!");
                 }
-                if (productNumber + 1 > marcetProduct.length || ((productNumber + 1) < 0) || ((productCount) < 0)) { //проверка условия корректности ввода двух чисел больше 0 и не больше длины массива
+                if (productNumber + 1 > marcetProduct.length || ((productNumber + 1) < 0)) { //проверка условия корректности ввода двух чисел больше 0 и не больше длины массива
                     System.out.println("Выберите продукт от 1 до " + marcetProduct.length);
                 } else {
-                    marcetProduct[productNumber] += productCount; // создаю массив корзины и добавляю в ячеку количество товара
+                    if (productCount == 0) {
+                        marcetProduct[productNumber] = 0;
+                    } else if ((marcetProduct[productNumber] + productCount) >= 0) {
+                        marcetProduct[productNumber] += productCount; // заполняем массив с кол-вом купленных продуктов
+                    } else {
+                        System.out.println("Ошибка операции!");
+                        System.out.println("Количество товаров в корзине - " + marcetProduct[productNumber] +
+                                ", а Вы пытаетесь убрать из нее - " + (productCount * -1));
+                    }
                 }
             } catch (NumberFormatException e) {
                 System.out.println("ОШИБКА! Вы ввели текст вместо числа");
-                continue;
             }
         }
         System.out.println("Ваша корзина:");
-        int sumProduct = 0;
+        System.out.println();
+        int sumProduct;
         int sumProductAction = 0;
         int sumProductActionAll = 0;
         System.out.println("Товары без акции");
@@ -64,6 +72,7 @@ class Main {
             }
         }
         System.out.println("Итого: " + sumProducts + " руб"); // без акции
+        System.out.println();
 
         System.out.println("Товары по акции 3 по цене 2: ");
         for (int i = 0; i < marcetProduct.length; i++) {
@@ -72,13 +81,13 @@ class Main {
                     int numberProductsAction = i - products.length;
                     int countProductsAction = (marcetProduct[i] * 2 / 3 + marcetProduct[i] % 3);
                     sumProductAction = countProductsAction * pricesAction[numberProductsAction];
-                    System.out.println(productsAction[numberProductsAction] + " " + countProductsAction + " шт вместо " + marcetProduct[i] + " шт " + pricesAction[numberProductsAction] + " руб/шт " + " в сумме " + sumProductAction + " руб. ");
-
+                    System.out.println(productsAction[numberProductsAction] + " " + marcetProduct[i] + " шт вместо " + countProductsAction + " шт " + pricesAction[numberProductsAction] + " руб/шт в сумме " + sumProductAction + " руб.");
                     sumProductActionAll += sumProductAction;
                 }
             }
         }
         System.out.println("Итого по акции: " + sumProductActionAll + " руб");
+        System.out.println();
         System.out.println("Итого по всем: " + (sumProducts + sumProductAction) + " руб");
     }
 }
